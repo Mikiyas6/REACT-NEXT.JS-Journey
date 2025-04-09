@@ -1,12 +1,20 @@
 const { parse } = require("url");
 const { createServer } = require("http");
 const { readFileSync } = require("fs");
+const { renderToString } = require("react-dom/server");
 const htmlTemplate = readFileSync(`${__dirname}/index.html`, "utf-8");
+const React = require("react");
 const server = createServer((req, res) => {
   const pathname = parse(req.url, true).pathname;
+
   if (pathname === "/") {
+    const renderedHTML = renderToString(<Home />);
+    const finalHTML = htmlTemplate.replace(
+      '<div id="root"></div>',
+      `<div id="root">${renderedHTML}</div>`
+    );
     res.writeHead(200, { "Content-Type": "text/html" });
-    res.end(htmlTemplate);
+    res.end(finalHTML);
   } else if (pathname === "/test") {
     res.end("TEST");
   } else {
