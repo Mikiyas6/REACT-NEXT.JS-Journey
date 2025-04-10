@@ -2,10 +2,11 @@ const { parse } = require("url");
 const { createServer } = require("http");
 const { readFileSync } = require("fs");
 const { renderToString } = require("react-dom/server");
-const htmlTemplate = readFileSync(`${__dirname}/index.html`, "utf-8");
 const React = require("react");
 const server = createServer((req, res) => {
   const pathname = parse(req.url, true).pathname;
+  const htmlTemplate = readFileSync(`${__dirname}/index.html`, "utf-8");
+  const clientJS = readFileSync(`${__dirname}/client.js`, "utf-8");
 
   if (pathname === "/") {
     const renderedHTML = renderToString(<Home />);
@@ -17,6 +18,9 @@ const server = createServer((req, res) => {
     res.end(finalHTML);
   } else if (pathname === "/test") {
     res.end("TEST");
+  } else if (pathname === "/client.js") {
+    res.writeHead(200, { "Content-Type": "text/javascript" });
+    res.end(clientJS);
   } else {
     res.end("The URL cannot be found!");
   }
